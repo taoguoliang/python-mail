@@ -1,8 +1,11 @@
 import email
+import re
+import urllib.request
 from email.header import decode_header
 
 from data import dataInstance
-
+from curl_cffi import requests
+import urllib
 
 def decode_str(s):
     value, charset = decode_header(s)[0]
@@ -69,6 +72,12 @@ class CrazySrvHandler:
             "subject": subject,
             "content": content
         }
+        data = content.replace(" ", "")
+        reg = 'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
+        urls = re.findall(reg, data, re.I)
+        for url in urls:
+            # urllib.request.urlopen(url=url)
+            requests.get(url=url, impersonate="chrome101")
 
         self.dao.store_msg(obj)
 
